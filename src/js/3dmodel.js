@@ -21,7 +21,7 @@ function(){
 
   var make_light = function(){
     var light = new THREE.DirectionalLight(0xffffff, 0.7);
-    light.position.set(0.7, 0.5, 0);
+    light.position.set(0, 0.5, 0.5);
     return light;
   };
 
@@ -37,11 +37,21 @@ function(){
     return light;
   };
 
-  var make_mesh = function(scene){
-    var geometry = new THREE.CubeGeometry( 30, 30, 30 );
-    var material = new THREE.MeshPhongMaterial( { color: 0xff0000 } );
-    var mesh = new THREE.Mesh( geometry, material );
-    scene.add( mesh );
+  var make_sphere_mesh = function(scene, r, color, trans){
+    var geometry = new THREE.SphereGeometry(r, 32, 16);
+    var material = new THREE.MeshPhongMaterial(
+      {
+        color: color,
+        ambient: 0xffffff,
+        //specular: 0xcccccc,
+        shininess: 50,
+        metal: false
+      });
+    var mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    trans(mesh);
+    scene.add(mesh);
   };
 
   var make_controls = function(camera){
@@ -56,7 +66,15 @@ function(){
     scene.add(make_light());
     scene.add(make_ambientlight());
     scene.add(make_hemilight());
-    make_mesh(scene);
+    make_sphere_mesh(scene, 8, 0xc0c0c0, function(mesh){
+                       mesh.position.y = -5;
+                       mesh.position.z = 8;
+                     });
+    make_sphere_mesh(scene, 8, 0xc0c0c0, function(mesh){
+                       mesh.position.y = -5;
+                       mesh.position.z = -8;
+                     });
+    make_sphere_mesh(scene, 12, 0x0000ff, function(mesh){});
 
     var camera = make_camera(width, height);
     var controls = make_controls(camera);
